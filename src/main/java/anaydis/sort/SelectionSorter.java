@@ -20,9 +20,7 @@ public class SelectionSorter extends AbstractSorter {
         for(int i = 0; i < size; i++){
             int min = i;
             for(int j = i + 1; j < size; j++){
-                final T minE = list.get(min);
-                final T currentE = list.get(j);
-                if(less(currentE, minE, comparator)) min = j;
+                if(less(list, j, min, comparator)) min = j;
             }
             swap(list, min, i);
         }
