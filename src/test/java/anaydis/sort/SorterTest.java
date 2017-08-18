@@ -1,6 +1,7 @@
 package anaydis.sort;
 
 import anaydis.sort.data.DataSetGenerator;
+import anaydis.sort.data.StringDataSetGenerator;
 
 /**
  * Sorter tests should subclass this abstract implementation
@@ -8,10 +9,10 @@ import anaydis.sort.data.DataSetGenerator;
 abstract class SorterTest extends AbstractSorterTest {
 
     @Override protected DataSetGenerator<String> createStringDataSetGenerator() {
-        throw new IllegalStateException("To be implemented!");
+        return new StringDataSetGenerator();
     }
 
     @Override protected DataSetGenerator<Integer> createIntegerDataSetGenerator() {
-        throw new IllegalStateException("To be implemented!");
+        return new IntegerDataSetGenerator();
     }
 }
