@@ -16,10 +16,13 @@ public class BubbleSorter extends AbstractSorter{
     @Override
     public <T> void sort(@NotNull Comparator<T> comparator, @NotNull List<T> list) {
         final int size = list.size();
-        for(int i = 0; i < size; i++){
+        boolean sorted = false;
+        for(int i = 0; i < size && !sorted; i++){
+            sorted = true;
             for(int j = i+1; j < size; j++){
                 if(less(list, j, i, comparator)){
                     swap(list, i, j);
+                    sorted = false;
                 }
             }
         }
