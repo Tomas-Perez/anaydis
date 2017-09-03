@@ -20,7 +20,7 @@ public class BubbleSorter extends AbstractSorter{
         for(int i = 0; i < size && !sorted; i++){
             sorted = true;
             for(int j = i+1; j < size; j++){
-                if(less(list, j, i, comparator)){
+                if(greater(list, i, j, comparator)){
                     swap(list, i, j);
                     sorted = false;
                 }

@@ -19,7 +19,7 @@ public class InsertionSorter extends AbstractSorter {
         final int size = list.size();
         for(int i = 1; i < size; i++){
             for(int j = i - 1; j >= 0; j--){
-                if(less(list, j+1, j, comparator)){
+                if(greater(list, j, j+1, comparator)){
                     swap(list, j, j+1);
                 }
                 else break;

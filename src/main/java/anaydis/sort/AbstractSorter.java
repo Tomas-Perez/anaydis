@@ -38,9 +38,9 @@ abstract class AbstractSorter implements Sorter, ObservableSorter {
         list.set(index1, tmp);
     }
 
-    protected <T> boolean less(@NotNull List<T> list, int index1, int index2, @NotNull Comparator<T> comparator){
+    protected <T> boolean greater(@NotNull List<T> list, int index1, int index2, @NotNull Comparator<T> comparator){
         listeners.forEach(listener -> listener.greater(index1, index2));
-        return comparator.compare(list.get(index1), list.get(index2)) < 0;
+        return comparator.compare(list.get(index1), list.get(index2)) > 0;
     }
 
     @NotNull
