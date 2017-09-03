@@ -11,12 +11,12 @@ import java.util.List;
 /**
  * Abstract sorter: all sorter implementations should subclass this class.
  */
-public abstract class AbstractSorter implements Sorter, ObservableSorter {
+abstract class AbstractSorter implements Sorter, ObservableSorter {
 
-    private SorterType sorterType;
-    private List<SorterListener> listeners;
+    private final SorterType sorterType;
+    private final List<SorterListener> listeners;
 
-    public AbstractSorter(SorterType sorterType) {
+    AbstractSorter(SorterType sorterType) {
         listeners = new ArrayList<>();
         this.sorterType = sorterType;
     }
@@ -44,7 +44,7 @@ public abstract class AbstractSorter implements Sorter, ObservableSorter {
     }
 
     @NotNull
-    public SorterType getType() {
+    public final SorterType getType() {
         return sorterType;
     }
 }

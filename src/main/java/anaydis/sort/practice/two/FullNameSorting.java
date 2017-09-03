@@ -1,4 +1,4 @@
-package anaydis.sort.nameSorting;
+package anaydis.sort.practice.two;
 
 import anaydis.sort.SorterProviderImpl;
 import anaydis.sort.SorterType;
@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * @author Tomas Perez Molina
  */
-public class fullNameSorting {
+public class FullNameSorting {
     public static void main(String[] args) {
         SorterProvider provider = new SorterProviderImpl();
         List<String> firstNames = Arrays.asList("Waylon", "Justine", "Abdullah", "Marcus", "Thalia", "Mathias", "Eddie", "Angela", "Lia", "Hadassah", "Joanna", "Jonathon");

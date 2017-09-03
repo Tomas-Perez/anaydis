@@ -1,4 +1,4 @@
-package anaydis.sort.nameSorting;
+package anaydis.sort.practice.two;
 
 /**
  * @author Tomas Perez Molina

@@ -1,25 +1,22 @@
 package anaydis.sort.stats;
 
 import anaydis.sort.*;
-import anaydis.sort.gui.SorterListener;
+import anaydis.sort.gui.ObservableSorter;
 import anaydis.sort.provider.SorterProvider;
-
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * @author Tomas Perez Molina
  */
 public class SortStatistics {
-    private static EnumMap<SorterType, SorterAnalyzer> listenerMap;
+    private static Map<SorterType, SorterAnalyzer> listenerMap;
 
     public static void main(String[] args) {
         listenerMap = new EnumMap<>(SorterType.class);
         SorterProvider provider = new SorterProviderImpl();
         IntegerDataSetGenerator integerDataSetGenerator = new IntegerDataSetGenerator();
         for(Sorter sorter: provider.getAllSorters()){
-            AbstractSorter abstractSorter = (AbstractSorter) sorter;
+            ObservableSorter abstractSorter = (ObservableSorter) sorter;
             SorterAnalyzer sorterAnalyzer = new SorterAnalyzer();
             abstractSorter.addSorterListener(sorterAnalyzer);
             listenerMap.put(abstractSorter.getType(), sorterAnalyzer);
