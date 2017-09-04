@@ -38,7 +38,7 @@ public class IntegerDataSetGenerator implements DataSetGenerator<Integer> {
     @Override
     public List<Integer> createRandom(int length) {
         return new Random()
-                .ints(length)
+                .ints(length, 0, length*100)
                 .boxed()
                 .collect(Collectors.toList());
     }

@@ -21,7 +21,15 @@ public class HSorter extends AbstractSorter {
      * H-Sort list. Basically a BubbleSort in sets of elements separated by h
      */
     public <T> void sort(@NotNull Comparator<T> comparator, @NotNull List<T> list, int h) {
-
+        final int size = list.size();
+        for(int i = 0; i < size; i++){
+            box(i, size);
+            for(int j = i+h; j < size; j+=h){
+                if(greater(list, i, j, comparator)){
+                    swap(list, i, j);
+                }
+            }
+        }
     }
 }
 

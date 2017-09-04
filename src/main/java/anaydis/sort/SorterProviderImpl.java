@@ -16,6 +16,11 @@ public class SorterProviderImpl implements SorterProvider {
         map.put(SorterType.BUBBLE, new BubbleSorter());
         map.put(SorterType.SELECTION, new SelectionSorter());
         map.put(SorterType.INSERTION, new InsertionSorter());
+        map.put(SorterType.SHELL, new ShellSorter());
+        map.put(SorterType.H, new HSorter());
+        map.put(SorterType.QUICK, new QuickSorter());
+        map.put(SorterType.QUICK_CUT, new QuickSorterCutOff());
+        map.put(SorterType.QUICK_NON_RECURSIVE, new QuickSorterNR());
     }
 
     @NotNull

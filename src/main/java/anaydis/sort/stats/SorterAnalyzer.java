@@ -9,13 +9,14 @@ public class SorterAnalyzer implements SorterListener{
     private int swaps;
     private int compares;
     private int equals;
-    private int boxs;
+    private int boxes;
     private int copies;
-
+    private long startTime;
+    private long finishTime;
 
     @Override
     public void box(int from, int to) {
-        boxs++;
+        boxes++;
     }
 
     @Override
@@ -50,19 +51,31 @@ public class SorterAnalyzer implements SorterListener{
         return equals;
     }
 
-    public int getBoxs() {
-        return boxs;
+    public int getBoxes() {
+        return boxes;
     }
 
     public int getCopies() {
         return copies;
     }
 
-    public void clear(){
+    public void start(){
+        startTime = System.nanoTime();
+    }
+
+    public void stop(){
+        finishTime = System.nanoTime();
+    }
+
+    public long getElapsedTime() {
+        return finishTime - startTime;
+    }
+
+    public void reset(){
         swaps = 0;
         compares = 0;
         equals = 0;
-        boxs = 0;
+        boxes = 0;
         copies = 0;
     }
 }

@@ -64,6 +64,6 @@ public class SortStatistics {
         System.out.println("swaps " + (analyzer.getSwaps() / repetitions));
         System.out.println("compares " + (analyzer.getCompares() / repetitions));
         System.out.println("----------------\n");
-        analyzer.clear();
+        analyzer.reset();
     }
 }

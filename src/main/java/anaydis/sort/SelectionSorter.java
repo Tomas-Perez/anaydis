@@ -18,6 +18,7 @@ public class SelectionSorter extends AbstractSorter {
     public <T> void sort(@NotNull Comparator<T> comparator, @NotNull List<T> list) {
         final int size = list.size();
         for(int i = 0; i < size; i++){
+            box(i, size);
             int min = i;
             for(int j = i + 1; j < size; j++){
                 if(greater(list, min, j, comparator)) min = j;

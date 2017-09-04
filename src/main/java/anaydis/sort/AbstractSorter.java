@@ -43,6 +43,10 @@ abstract class AbstractSorter implements Sorter, ObservableSorter {
         return comparator.compare(list.get(index1), list.get(index2)) > 0;
     }
 
+    protected void box(int l, int r){
+        listeners.forEach(listener -> listener.box(l, r));
+    }
+
     @NotNull
     public final SorterType getType() {
         return sorterType;
