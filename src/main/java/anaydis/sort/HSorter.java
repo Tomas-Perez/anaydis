@@ -25,9 +25,7 @@ public class HSorter extends AbstractSorter {
         for(int i = 0; i < size; i++){
             box(i, size);
             for(int j = i+h; j < size; j+=h){
-                if(greater(list, i, j, comparator)){
-                    swap(list, i, j);
-                }
+                swapIfGreater(list, i, j, comparator);
             }
         }
     }

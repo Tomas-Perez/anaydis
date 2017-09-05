@@ -37,17 +37,4 @@ public class QuickSorterNR extends AbstractQuickSorter{
         }
     }
 
-    private class IndexPair extends Pair<Integer, Integer>{
-        IndexPair(Integer left, Integer right) {
-            super(left, right);
-        }
-
-        int getLeft(){
-            return getKey();
-        }
-
-        int getRight(){
-            return getValue();
-        }
-    }
 }
