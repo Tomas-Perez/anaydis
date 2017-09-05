@@ -1,4 +1,4 @@
-package anaydis.sort.stats;
+package anaydis.practice.stats;
 
 import anaydis.sort.gui.SorterListener;
 
