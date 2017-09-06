@@ -30,6 +30,7 @@ public class QuickSorter3Way extends AbstractQuickSorter{
         T pivot = list.get(less);
         while (i <= greater) {
             int cmp = comparator.compare(list.get(i), pivot);
+            greater(list, i, less, comparator);
             if(cmp < 0) swap(list, less++, i++);
             else if (cmp > 0) swap(list, i, greater--);
             else i++;

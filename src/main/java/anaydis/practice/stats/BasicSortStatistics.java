@@ -8,8 +8,8 @@ import java.util.*;
 /**
  * @author Tomas Perez Molina
  */
-public class SortStatistics {
-    private static Map<SorterType, SorterAnalyzer> listenerMap;
+public class BasicSortStatistics {
+    private static Map<SorterType, SorterListenerImpl> listenerMap;
 
     public static void main(String[] args) {
         listenerMap = new EnumMap<>(SorterType.class);
@@ -17,9 +17,9 @@ public class SortStatistics {
         IntegerDataSetGenerator integerDataSetGenerator = new IntegerDataSetGenerator();
         for(Sorter sorter: provider.getAllSorters()){
             ObservableSorter abstractSorter = (ObservableSorter) sorter;
-            SorterAnalyzer sorterAnalyzer = new SorterAnalyzer();
-            abstractSorter.addSorterListener(sorterAnalyzer);
-            listenerMap.put(abstractSorter.getType(), sorterAnalyzer);
+            SorterListenerImpl sorterListenerImpl = new SorterListenerImpl();
+            abstractSorter.addSorterListener(sorterListenerImpl);
+            listenerMap.put(abstractSorter.getType(), sorterListenerImpl);
         }
 
         Scanner scanner = new Scanner(System.in);
@@ -60,7 +60,7 @@ public class SortStatistics {
         System.out.println(sorter.getType().name());
         System.out.println("first time " + firstTime);
         System.out.println("avg Time " + (totalTime / repetitions));
-        SorterAnalyzer analyzer = listenerMap.get(sorter.getType());
+        SorterListenerImpl analyzer = listenerMap.get(sorter.getType());
         System.out.println("swaps " + (analyzer.getSwaps() / repetitions));
         System.out.println("compares " + (analyzer.getCompares() / repetitions));
         System.out.println("----------------\n");

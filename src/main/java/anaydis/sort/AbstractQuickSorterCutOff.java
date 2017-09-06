@@ -16,7 +16,7 @@ abstract class AbstractQuickSorterCutOff extends AbstractQuickSorter{
     public AbstractQuickSorterCutOff(SorterType sorterType) {
         super(sorterType);
         insertionSorter = new InsertionSorter();
-        defaultM = 9;
+        defaultM = 10;
     }
 
     @Override

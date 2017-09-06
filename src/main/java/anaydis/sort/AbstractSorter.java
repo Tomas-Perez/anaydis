@@ -14,7 +14,7 @@ import java.util.List;
 abstract class AbstractSorter implements Sorter, ObservableSorter {
 
     private final SorterType sorterType;
-    private final List<SorterListener> listeners;
+    protected final List<SorterListener> listeners;
 
     AbstractSorter(SorterType sorterType) {
         listeners = new ArrayList<>();

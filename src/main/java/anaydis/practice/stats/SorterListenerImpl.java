@@ -5,7 +5,7 @@ import anaydis.sort.gui.SorterListener;
 /**
  * @author Tomas Perez Molina
  */
-public class SorterAnalyzer implements SorterListener{
+public class SorterListenerImpl implements SorterListener{
     private int swaps;
     private int compares;
     private int equals;
