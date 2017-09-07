@@ -16,13 +16,11 @@ abstract class AbstractQuickSorter extends AbstractSorter{
     }
 
     protected <T> int partition(@NotNull Comparator<T> comparator, @NotNull List<T> list, final int l, final int r){
-        int i = l;
-        int j = r-1;
+        int i = l-1;
+        int j = r;
         while(true){
-            while(!greater(list, i, r, comparator) && i != r)
-                i++;
-            while(!greater(list, r, j, comparator) && j != l)
-                j--;
+            while(greater(list, r, ++i, comparator) && i != r);
+            while(greater(list, --j, r, comparator) && j != l);
 
             if(i >= j) break;
 
