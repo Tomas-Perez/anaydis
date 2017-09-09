@@ -23,6 +23,8 @@ public class SorterProviderImpl implements SorterProvider {
         map.put(SorterType.QUICK_NON_RECURSIVE, new QuickSorterNR());
         map.put(SorterType.QUICK_MED_OF_THREE, new QuickSorterMO3());
         map.put(SorterType.QUICK_THREE_PARTITION, new QuickSorter3Way());
+        map.put(SorterType.MERGE_BOTTOM_UP, new MergeSorterBottomUp());
+        map.put(SorterType.MERGE, new MergeSorterTopDown());
     }
 
     @NotNull

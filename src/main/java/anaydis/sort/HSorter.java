@@ -23,7 +23,7 @@ public class HSorter extends AbstractSorter {
     public <T> void sort(@NotNull Comparator<T> comparator, @NotNull List<T> list, int h) {
         final int size = list.size();
         for(int i = 0; i < size; i++){
-            box(i, size);
+            notifyBox(i, size);
             for(int j = i+h; j < size; j+=h){
                 swapIfGreater(list, i, j, comparator);
             }

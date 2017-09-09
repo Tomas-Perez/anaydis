@@ -48,7 +48,11 @@ abstract class AbstractSorter implements Sorter, ObservableSorter {
             swap(list, index1, index2);
     }
 
-    protected void box(int l, int r){
+    protected <T> void notifyCopy(int fromIndex, int toIndex, boolean copyToAux){
+        listeners.forEach(listener -> listener.copy(fromIndex, toIndex, copyToAux));
+    }
+
+    protected void notifyBox(int l, int r){
         listeners.forEach(listener -> listener.box(l, r));
     }
 

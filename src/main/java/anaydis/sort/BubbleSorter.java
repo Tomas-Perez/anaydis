@@ -18,7 +18,7 @@ public class BubbleSorter extends AbstractSorter{
         final int size = list.size();
         for(int i = 0; i < size; i++){
             for(int j = i+1; j < size; j++){
-                box(j, size);
+                notifyBox(j, size);
                 swapIfGreater(list, i, j, comparator);
             }
         }
