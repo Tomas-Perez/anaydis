@@ -21,7 +21,7 @@ public class SorterListenerImpl implements SorterListener{
 
     @Override
     public void copy(int from, int to, boolean copyToAux) {
-        copies++;
+        swaps++;
     }
 
     @Override

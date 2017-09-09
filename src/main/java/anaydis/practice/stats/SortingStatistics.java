@@ -36,4 +36,13 @@ public class SortingStatistics {
                     Arrays.asList(SortingAnalyzer.Ordering.RANDOM));
         }
     }
+
+    public static class MergeSortersAnalysis{
+        public static void main(String[] args) {
+            new SortingAnalyzer().analyze(
+                    Arrays.asList(new MergeSorterBottomUp(), new MergeSorterTopDown()),
+                    Arrays.asList(SortingAnalyzer.Schema.ONE_THOUSAND, SortingAnalyzer.Schema.TEN_THOUSAND, SortingAnalyzer.Schema.HUNDRED_THOUSAND, SortingAnalyzer.Schema.MILLION),
+                    Arrays.asList(SortingAnalyzer.Ordering.RANDOM));
+        }
+    }
 }

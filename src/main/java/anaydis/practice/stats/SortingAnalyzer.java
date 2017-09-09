@@ -86,7 +86,13 @@ public class SortingAnalyzer {
         private final SuperCell[][] data = new SuperCell[Ordering.values().length][Schema.values().length];
 
         Cube() {
-            init();
+            List<Schema> schemas = Arrays.asList(Schema.values());
+            List<Ordering> orderings = Arrays.asList(Ordering.values());
+            init(schemas, orderings);
+        }
+
+        Cube(List<Schema> schemas, List<Ordering> orderings){
+            init(schemas, orderings);
         }
 
         void submit(final Schema schema, final Ordering ordering, final SorterListenerImpl listener) {
@@ -94,10 +100,10 @@ public class SortingAnalyzer {
             cell.submit(listener);
         }
 
-        private void init() {
-            for (int i = 0; i < Ordering.values().length; i++) {
-                for (int j = 0; j < Schema.values().length; j++) {
-                    data[i][j] = new SuperCell();
+        private void init(List<Schema> schemas, List<Ordering> orderings) {
+            for (Ordering ordering : orderings) {
+                for (Schema schema : schemas) {
+                    data[ordering.ordinal()][schema.ordinal()] = new SuperCell();
                 }
             }
         }
@@ -129,6 +135,7 @@ public class SortingAnalyzer {
         private Cell cell(DataUnit unit) {
             return data[unit.ordinal()];
         }
+
     }
 
     private class Cell {
@@ -179,7 +186,7 @@ public class SortingAnalyzer {
     }
 
     @NotNull private Cube cube(@NotNull final Sorter sorter, @NotNull final List<Schema> schemas, @NotNull final List<Ordering> orderings) {
-        final Cube cube = new Cube();
+        final Cube cube = new Cube(schemas, orderings);
         final IntegerDataSetGenerator generator = new IntegerDataSetGenerator();
 
         for (final Schema schema : schemas) {
@@ -191,7 +198,7 @@ public class SortingAnalyzer {
     }
 
     @NotNull private Cube shellCube(@NotNull final ShellSorter sorter, @NotNull final List<Schema> schemas, @NotNull final List<Ordering> orderings, List<Integer> hList) {
-        final Cube cube = new Cube();
+        final Cube cube = new Cube(schemas, orderings);
         final IntegerDataSetGenerator generator = new IntegerDataSetGenerator();
 
         for (final Schema schema : schemas) {
@@ -203,7 +210,8 @@ public class SortingAnalyzer {
     }
 
     @NotNull private Cube mCube(@NotNull final QuickSorterCutOff sorter, @NotNull final List<Schema> schemas, int m) {
-        final Cube cube = new Cube();
+        List<Ordering> orderings = Arrays.asList(Ordering.values());
+        final Cube cube = new Cube(schemas, orderings);
         final IntegerDataSetGenerator generator = new IntegerDataSetGenerator();
 
         for (final Schema schema : schemas) {
@@ -213,14 +221,18 @@ public class SortingAnalyzer {
     }
 
     private <T> void analyze(@NotNull final Map<T, Cube> cubes){
+        analyze(cubes, Arrays.asList(Schema.values()), Arrays.asList(Ordering.values()));
+    }
+
+    private <T> void analyze(@NotNull final Map<T, Cube> cubes, List<Schema> schemas, List<Ordering> orderings){
         cubes.forEach((sorterType, cube) -> {
             System.out.println("SORTER = " + sorterType);
-            for (Ordering ordering : Ordering.values()) {
+            for (Ordering ordering : orderings) {
                 System.out.println("\tORDERING = " + ordering);
-                final SuperCell[] schemas = cube.schemas(ordering);
-                for (final Schema schema : Schema.values()) {
+                final SuperCell[] schemasArray = cube.schemas(ordering);
+                for (final Schema schema : schemas) {
                     System.out.println("\t\tSCHEMA = " + schema);
-                    final SuperCell s = schemas[schema.ordinal()];
+                    final SuperCell s = schemasArray[schema.ordinal()];
                     for (DataUnit unit : DataUnit.values()) {
                         System.out.println("\t\t\tUNIT = " + unit);
                         final Cell cell = s.cell(unit);
@@ -241,28 +253,31 @@ public class SortingAnalyzer {
     }
 
     public void shellAnalysis(){
-        final Map<ShellSequence, Cube> cubes = shellCubes(Arrays.asList(Schema.ONE_HUNDRED, Schema.ONE_THOUSAND, Schema.TEN_THOUSAND),
-                Arrays.asList(Ordering.values()));
-        analyze(cubes);
+        List<Schema> schemas = Arrays.asList(Schema.ONE_HUNDRED, Schema.ONE_THOUSAND, Schema.TEN_THOUSAND);
+        List<Ordering> orderings = Arrays.asList(Ordering.values());
+        final Map<ShellSequence, Cube> cubes = shellCubes(schemas, orderings);
+        analyze(cubes, schemas, orderings);
     }
 
     public void mAnalysis(){
-        final Map<M, Cube> cubes = mCubes(Arrays.asList(Schema.ONE_HUNDRED, Schema.ONE_THOUSAND, Schema.TEN_THOUSAND, Schema.HUNDRED_THOUSAND, Schema.MILLION));
-        analyze(cubes);
+        List<Schema> schemas = Arrays.asList(Schema.ONE_HUNDRED, Schema.ONE_THOUSAND, Schema.TEN_THOUSAND, Schema.HUNDRED_THOUSAND, Schema.MILLION);
+        List<Ordering> orderings = Collections.singletonList(Ordering.RANDOM);
+        final Map<M, Cube> cubes = mCubes(schemas);
+        analyze(cubes, schemas, orderings);
     }
 
     public void basicAnalysis(){
         List<Sorter> sorters = new ArrayList<>();
         new SorterProviderImpl().getAllSorters().forEach(sorters::add);
-        final Map<SorterType, Cube> cubes = cubes(sorters,
-                Arrays.asList(Schema.ONE_HUNDRED, Schema.FIVE_HUNDRED, Schema.ONE_THOUSAND),
-                Arrays.asList(Ordering.values()));
-        analyze(cubes);
+        final List<Schema> schemas = Arrays.asList(Schema.ONE_HUNDRED, Schema.FIVE_HUNDRED, Schema.ONE_THOUSAND);
+        final List<Ordering> orderings = Arrays.asList(Ordering.values());
+        final Map<SorterType, Cube> cubes = cubes(sorters, schemas, orderings);
+        analyze(cubes, schemas, orderings);
     }
 
     public void analyze(List<Sorter> sorters, List<Schema> schemas, List<Ordering> orderings){
         final Map<SorterType, Cube> cubes = cubes(sorters, schemas, orderings);
-        analyze(cubes);
+        analyze(cubes, schemas, orderings);
     }
 
     private <T> void run(final Sorter sorter, final DataSetGenerator<T> generator, Schema schema, final Ordering ordering, final Cube cube) {
