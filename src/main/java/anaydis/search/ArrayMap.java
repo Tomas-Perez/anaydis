@@ -28,7 +28,7 @@ public class ArrayMap<K,V> implements Map<K,V>{
 
     @Override
     public boolean containsKey(@NotNull K key) {
-        return indexOf(key) == -1;
+        return indexOf(key) != -1;
     }
 
     @Override
