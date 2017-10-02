@@ -1,4 +1,4 @@
-package anaydis.map;
+package anaydis.search;
 
 /**
  * @author Tomas Perez Molina

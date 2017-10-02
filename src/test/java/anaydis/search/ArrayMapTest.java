@@ -1,8 +1,5 @@
-package anaydis.map;
+package anaydis.search;
 
-import anaydis.search.Map;
-import anaydis.sort.IntegerDataSetGenerator;
-import anaydis.sort.data.DataSetGenerator;
 import org.junit.Test;
 
 import java.util.Arrays;

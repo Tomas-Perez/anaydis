@@ -1,6 +1,5 @@
-package anaydis.map;
+package anaydis.search;
 
-import anaydis.search.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
