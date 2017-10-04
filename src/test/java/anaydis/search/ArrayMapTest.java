@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 public class ArrayMapTest extends AbstractMapTester {
 
     public ArrayMapTest(){
-        super(new ArrayMap<>(Integer::compareTo));
+        super(new ArrayMap<>(String::compareTo));
     }
 
     @Test
@@ -22,7 +22,7 @@ public class ArrayMapTest extends AbstractMapTester {
         List<Integer> values = Arrays.asList(10, 5, 10, 20, 2);
         List<Integer> keys = Arrays.asList(10, 5, 10, 20, 2);
         for(int i = 0; i < values.size(); i++){
-            map.put(values.get(i), keys.get(i));
+            map.put(keys.get(i), values.get(i));
         }
         assertEquals(0, map.find(2, 0, map.size()-1));
         assertEquals(1, map.find(5, 0, map.size()-1));
@@ -38,7 +38,7 @@ public class ArrayMapTest extends AbstractMapTester {
         List<Integer> values = Arrays.asList(10, 5, 10, 20, 2);
         List<Integer> keys = Arrays.asList(10, 5, 10, 20, 2);
         for(int i = 0; i < values.size(); i++){
-            map.put(values.get(i), keys.get(i));
+            map.put(keys.get(i), values.get(i));
         }
         assertEquals(0, map.indexOf(2));
         assertEquals(1, map.indexOf(5));

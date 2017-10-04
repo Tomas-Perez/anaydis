@@ -1,6 +1,5 @@
 package anaydis.search;
 
-import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +9,7 @@ import java.util.*;
  * @author Tomas Perez Molina
  */
 public class RandomizedTreeMap<K, V> implements Map<K,V> {
-    private Node<K, V> head;
+    private Node head;
     private int size;
     private final Comparator<K> keyComp;
     private Random random = new Random();
@@ -31,7 +30,7 @@ public class RandomizedTreeMap<K, V> implements Map<K,V> {
 
     @Override
     public @Nullable V get(@NotNull K key) {
-        final Node<K, V> node = find(head, key);
+        final Node node = find(head, key);
         if(node != null) return node.value;
         else return null;
     }
@@ -48,12 +47,12 @@ public class RandomizedTreeMap<K, V> implements Map<K,V> {
         return putPair.value;
     }
 
-    NodeValuePair put(@Nullable Node<K,V> node, K key, V value){
+    NodeValuePair put(@Nullable Node node, K key, V value){
         V prevValue = null;
-        Node<K, V> resultNode;
+        Node resultNode;
         if(node == null){
             size++;
-            resultNode = new Node<>(key, value);
+            resultNode = new Node(key, value);
         }
         else {
             int comp = keyComp.compare(key, node.key);
@@ -76,12 +75,12 @@ public class RandomizedTreeMap<K, V> implements Map<K,V> {
         return new NodeValuePair(resultNode, prevValue);
     }
 
-    NodeValuePair rootPut(@Nullable Node<K,V> node, K key, V value){
+    NodeValuePair rootPut(@Nullable Node node, K key, V value){
         V prevValue = null;
-        Node<K, V> resultNode;
+        Node resultNode;
         if(node == null){
             size++;
-            resultNode = new Node<>(key, value);
+            resultNode = new Node(key, value);
         }
         else {
             int comp = keyComp.compare(key, node.key);
@@ -106,15 +105,15 @@ public class RandomizedTreeMap<K, V> implements Map<K,V> {
         return new NodeValuePair(resultNode, prevValue);
     }
 
-    private Node<K, V> rotateRight(Node<K, V> node){
-        Node<K, V> result = node.left;
+    private Node rotateRight(Node node){
+        Node result = node.left;
         node.left = result.right;
         result.right = node;
         return result;
     }
 
-    private Node<K, V> rotateLeft(Node<K, V> node){
-        Node<K, V> result = node.right;
+    private Node rotateLeft(Node node){
+        Node result = node.right;
         node.right = result.left;
         result.left = node;
         return result;
@@ -126,7 +125,7 @@ public class RandomizedTreeMap<K, V> implements Map<K,V> {
         size = 0;
     }
 
-    @Nullable Node<K, V> find(@Nullable Node<K, V> node, @NotNull K key){
+    @Nullable Node find(@Nullable Node node, @NotNull K key){
         if(node == null) return null;
         int comp = keyComp.compare(key, node.key);
         if(comp > 0) return find(node.right, key);
@@ -141,18 +140,18 @@ public class RandomizedTreeMap<K, V> implements Map<K,V> {
         return keys.iterator();
     }
 
-    private void inOrder(Node<K, V> node, List<K> target) {
+    private void inOrder(Node node, List<K> target) {
         if(node == null) return;
         inOrder(node.left, target);
         target.add(node.key);
         inOrder(node.right, target);
     }
 
-    protected class Node<K, V> {
+    protected class Node {
         K key;
         V value;
-        Node<K, V> left;
-        Node<K, V> right;
+        Node left;
+        Node right;
 
         Node(K key, V value) {
             this.value = value;
@@ -161,10 +160,10 @@ public class RandomizedTreeMap<K, V> implements Map<K,V> {
     }
 
     protected class NodeValuePair{
-        Node<K, V> node;
+        Node node;
         V value;
 
-        NodeValuePair(Node<K, V> node, V value) {
+        NodeValuePair(Node node, V value) {
             this.node = node;
             this.value = value;
         }
