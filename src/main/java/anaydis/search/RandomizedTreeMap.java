@@ -57,8 +57,16 @@ public class RandomizedTreeMap<K, V> implements Map<K,V> {
         }
         else {
             int comp = keyComp.compare(key, node.key);
-            if(comp > 0) node.right = put(node.right, key, value).node;
-            else if(comp < 0) node.left = put(node.left, key, value).node;
+            if(comp > 0){
+                NodeValuePair pair = put(node.right, key, value);
+                node.right = pair.node;
+                prevValue = pair.value;
+            }
+            else if(comp < 0){
+                NodeValuePair pair = put(node.left, key, value);
+                node.left = pair.node;
+                prevValue = pair.value;
+            }
             else {
                 prevValue = node.value;
                 node.value = value;
@@ -78,12 +86,16 @@ public class RandomizedTreeMap<K, V> implements Map<K,V> {
         else {
             int comp = keyComp.compare(key, node.key);
             if(comp > 0){
-                node.right = put(node.right, key, value).node;
+                NodeValuePair pair = put(node.right, key, value);
+                node.right = pair.node;
                 resultNode = rotateLeft(node);
+                prevValue = pair.value;
             }
             else if(comp < 0){
-                node.left = put(node.left, key, value).node;
+                NodeValuePair pair = put(node.left, key, value);
+                node.left = pair.node;
                 resultNode = rotateRight(node);
+                prevValue = pair.value;
             }
             else {
                 prevValue = node.value;
