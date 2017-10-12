@@ -32,6 +32,6 @@ public class BankersQueue<T> implements Queue<T> {
 
     @Override
     public boolean isEmpty() {
-        return in.isEmpty() || out.isEmpty();
+        return in.isEmpty() && out.isEmpty();
     }
 }
