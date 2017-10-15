@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +37,7 @@ public class Huffman implements Compressor {
         output.write(lastSigBits);
         output.write(CONTROL_VAL);
         int read_byte = input.read();
-        byte acum = 0;
+        int acum = 0;
         int sigBits = 0;
         while (read_byte != -1) {
             HuffmanTable.HuffmanKey key = table.getKey((char) read_byte);
@@ -64,10 +65,10 @@ public class Huffman implements Compressor {
         HashMap<HuffmanTable.HuffmanKey, Character> keyMap = new HashMap<>();
         int read_byte = input.read();
         while(read_byte != CONTROL_VAL){
-            int key = read_byte;
-            int size = input.read();
+            int size = read_byte;
+            int key = extractInt(input, size);
             char character = (char) input.read();
-            keyMap.put(new HuffmanTable.HuffmanKey((byte) key, (byte) size), character);
+            keyMap.put(new HuffmanTable.HuffmanKey(key, (byte) size), character);
             read_byte = input.read();
         }
         read_byte = input.read();
@@ -79,7 +80,7 @@ public class Huffman implements Compressor {
         int lastSigBit = input.read();
         input.read();
         read_byte = input.read();
-        byte acum = 0, size = 0;
+        int acum = 0, size = 0;
         int byteCount = 0, lowerLimit = 0;
         while(byteCount < msgSize){
             if(byteCount == msgSize - 1 && lastSigBit != 0) lowerLimit = BYTE_SIZE - lastSigBit;
@@ -91,7 +92,7 @@ public class Huffman implements Compressor {
                     acum = turnOffAndShift(acum);
                 }
                 size++;
-                final Character character = keyMap.get(new HuffmanTable.HuffmanKey(acum, size));
+                final Character character = keyMap.get(new HuffmanTable.HuffmanKey(acum, (byte) size));
                 if(character != null){
                     output.write(character);
                     acum = 0;
@@ -103,6 +104,15 @@ public class Huffman implements Compressor {
         }
         input.close();
         output.close();
+    }
+
+    private int extractInt(@NotNull InputStream input, int size) throws IOException {
+        byte[] keyArray = new byte[4];
+        int initialIndex = keyArray.length - 1 - ((size - 1) / 8);
+        for (int i = initialIndex; i < keyArray.length; i++) {
+            keyArray[i] = (byte) input.read();
+        }
+        return ByteBuffer.wrap(keyArray).getInt();
     }
 
     List<HuffmanTable.CharacterFreqPair> countCharacters(@NotNull InputStream input) throws IOException{
@@ -121,16 +131,16 @@ public class Huffman implements Compressor {
         return (num >> at & 1) != 0;
     }
 
-    Byte turnOnAndShift(byte num){
-        return (byte) ((num << 1 | 1));
+    Integer turnOnAndShift(int num){
+        return (num << 1 | 1);
     }
 
-    Byte turnOffAndShift(byte num){
-        return (byte) (num << 1 & ~(1));
+    Integer turnOffAndShift(int num){
+        return num << 1 & ~(1);
     }
 
-    Byte copy(byte num, int toIndex){
-        byte mask = (byte) (0b11111111 >>> (BYTE_SIZE - 1 - toIndex));
-        return (byte) (num & mask);
+    Integer copy(byte num, int toIndex){
+        int mask = (~(0) >>> (BYTE_SIZE - 1 - toIndex));
+        return (num & mask);
     }
 }

@@ -3,6 +3,7 @@ package anaydis.compression;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.ByteBuffer;
 import java.util.*;
 
 /**
@@ -16,7 +17,7 @@ public class HuffmanTable {
         characterFreqPairs = pairs;
         table = new HashMap<>(pairs.size());
         HuffmanNode head = createTree(pairs);
-        fillTable(head, (byte) 0, 0);
+        fillTable(head, 0, 0);
     }
 
     public MsgLengthAndSigBits getMessageSizeInBytes(){
@@ -41,18 +42,48 @@ public class HuffmanTable {
     }
 
     public byte[] toByteArray() {
-        byte[] array = new byte[table.size() * 3];
-        int i = 0;
+        ArrayList<Byte> list = new ArrayList<>(table.size() * 3);
         for (Character character : table.keySet()) {
-            array[i] = table.get(character).key;
-            array[i+1] = table.get(character).size;
-            array[i+2] = (byte) character.charValue();
-            i += 3;
+            list.add(table.get(character).size);
+            for (byte pos : integerToByteArray(table.get(character).key)) {
+                list.add(pos);
+            }
+            list.add((byte) character.charValue());
         }
-        return array;
+        byte[] result = new byte[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            result[i] = list.get(i);
+        }
+        return result;
     }
 
-    void fillTable(HuffmanNode node, Byte key, int level){
+    byte[] integerToByteArray(Integer integer){
+        byte[] array = new byte[4];
+        ByteBuffer.wrap(array).putInt(integer);
+        int actualLength = 0;
+        for (int i = 0; i < array.length; i++) {
+            if(array[i] != 0) {
+                actualLength = array.length - i;
+                break;
+            }
+        }
+        byte[] result;
+        if(actualLength == 0){
+            result = new byte[]{0};
+        }
+        else if(actualLength == array.length){
+            result = array;
+        }
+        else {
+            result = new byte[actualLength];
+            for (int i = 1; i <= actualLength; i++) {
+                result[actualLength - i] = array[array.length - i];
+            }
+        }
+        return result;
+    }
+
+    void fillTable(HuffmanNode node, Integer key, int level){
         if(node.isLeaf()){
             table.put(node.value, new HuffmanKey(key, (byte) (level > 0? level : 1)));
         }
@@ -62,12 +93,12 @@ public class HuffmanTable {
         }
     }
 
-    Byte turnOnAndShift(byte num){
-        return (byte) ((num << 1| 1) );
+    Integer turnOnAndShift(int num){
+        return (num << 1| 1);
     }
 
-    Byte turnOffAndShift(byte num){
-        return (byte) (num << 1 & ~(1));
+    Integer turnOffAndShift(int num){
+        return num << 1 & ~(1);
     }
 
     HuffmanNode createTree(List<CharacterFreqPair> pairs){
@@ -125,10 +156,10 @@ public class HuffmanTable {
     }
 
     public static class HuffmanKey{
-        byte key;
+        int key;
         byte size;
 
-        public HuffmanKey(byte key, byte size) {
+        public HuffmanKey(int key, byte size) {
             this.key = key;
             this.size = size;
         }
@@ -146,7 +177,7 @@ public class HuffmanTable {
 
         @Override
         public int hashCode() {
-            int result = (int) key;
+            int result = key;
             result = 31 * result + (int) size;
             return result;
         }
