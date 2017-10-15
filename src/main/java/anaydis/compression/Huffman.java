@@ -66,7 +66,7 @@ public class Huffman implements Compressor {
         int read_byte = input.read();
         while(read_byte != CONTROL_VAL){
             int size = read_byte;
-            int key = extractInt(input, size);
+            int key = extractInt(input, (byte) size);
             char character = (char) input.read();
             keyMap.put(new HuffmanTable.HuffmanKey(key, (byte) size), character);
             read_byte = input.read();
@@ -106,7 +106,8 @@ public class Huffman implements Compressor {
         output.close();
     }
 
-    private int extractInt(@NotNull InputStream input, int size) throws IOException {
+    private int extractInt(@NotNull InputStream input, byte size) throws IOException {
+        System.out.println(size);
         byte[] keyArray = new byte[4];
         int initialIndex = keyArray.length - 1 - ((size - 1) / 8);
         for (int i = initialIndex; i < keyArray.length; i++) {
