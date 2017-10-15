@@ -42,8 +42,8 @@ public class Huffman implements Compressor {
         while (read_byte != -1) {
             HuffmanTable.HuffmanKey key = table.getKey((char) read_byte);
             for (int j = key.size - 1; j >= 0; j--) {
-                if (bitAt(key.key, j)) acum = turnOnAndShift(acum);
-                else acum = turnOffAndShift(acum);
+                if (bitAt(key.key, j)) acum = turnOnAndShift(acum).intValue();
+                else acum = turnOffAndShift(acum).intValue();
                 sigBits++;
                 if (sigBits == BYTE_SIZE) {
                     output.write(acum);
@@ -80,7 +80,7 @@ public class Huffman implements Compressor {
         int lastSigBit = input.read();
         input.read();
         read_byte = input.read();
-        int acum = 0, size = 0;
+        long acum = 0, size = 0;
         int byteCount = 0, lowerLimit = 0;
         while(byteCount < msgSize){
             if(byteCount == msgSize - 1 && lastSigBit != 0) lowerLimit = BYTE_SIZE - lastSigBit;
@@ -106,7 +106,7 @@ public class Huffman implements Compressor {
         output.close();
     }
 
-    private int extractInt(@NotNull InputStream input, byte size) throws IOException {
+    private int extractInt(@NotNull InputStream input, int size) throws IOException {
         System.out.println(size);
         byte[] keyArray = new byte[4];
         int initialIndex = keyArray.length - 1 - ((size - 1) / 8);
@@ -128,20 +128,15 @@ public class Huffman implements Compressor {
         return result;
     }
 
-    boolean bitAt(int num, int at){
+    boolean bitAt(long num, int at){
         return (num >> at & 1) != 0;
     }
 
-    Integer turnOnAndShift(int num){
-        return (num << 1 | 1);
+    Long turnOnAndShift(long num){
+        return (num << 1L | 1L);
     }
 
-    Integer turnOffAndShift(int num){
-        return num << 1 & ~(1);
-    }
-
-    Integer copy(byte num, int toIndex){
-        int mask = (~(0) >>> (BYTE_SIZE - 1 - toIndex));
-        return (num & mask);
+    Long turnOffAndShift(long num){
+        return num << 1L & ~(1L);
     }
 }
