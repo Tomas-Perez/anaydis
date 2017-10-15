@@ -2,6 +2,7 @@ package anaydis.compression;
 
 import anaydis.sort.data.DataSetGenerator;
 import anaydis.sort.data.StringDataSetGenerator;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -33,6 +34,7 @@ public abstract class AbstractCompressorTest {
 //    }
 
     @Test
+    @Ignore
     public void largeTextTest() throws Exception{
         List<String> strings = Collections.singletonList("\"Call me Ishmael.  Some years ago--never mind how long\n" +
                 "    precisely--having little or no money in my purse, and nothing\n" +
