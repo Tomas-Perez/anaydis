@@ -13,9 +13,9 @@ import java.util.PriorityQueue;
  */
 public class sandbox {
     public static void main(String[] args) throws Exception{
-        byte[] array = {(byte) 127};
-        System.out.println(array[0]);
-        System.out.println((int) array[0]);
+//        byte[] array = {(byte) 127};
+//        System.out.println(array[0]);
+//        System.out.println((int) array[0]);
 //        String test = "This is a test ñ";
 //        InputStream stream = new ByteArrayInputStream(test.getBytes(StandardCharsets.UTF_8.name()));
 //        int Byte = stream.read();

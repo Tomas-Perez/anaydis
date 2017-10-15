@@ -10,6 +10,8 @@ import java.util.*;
  * @author Tomas Perez Molina
  */
 public class HuffmanTable {
+    private final int BYTE_SIZE = 8;
+    private final byte CONTROL_VAL = (byte) 255;
     private HashMap<Character, HuffmanKey> table;
     private List<CharacterFreqPair> characterFreqPairs;
 
@@ -17,7 +19,7 @@ public class HuffmanTable {
         characterFreqPairs = pairs;
         table = new HashMap<>(pairs.size());
         HuffmanNode head = createTree(pairs);
-        fillTable(head, 0L, 0);
+        fillTable(head, new byte[]{0}, 0);
     }
 
     public MsgLengthAndSigBits getMessageSizeInBytes(){
@@ -47,7 +49,8 @@ public class HuffmanTable {
             for (byte pos : longToByteArray((long) table.get(character).size)) {
                 list.add(pos);
             }
-            for (byte pos : longToByteArray(table.get(character).key)) {
+            list.add(CONTROL_VAL);
+            for (byte pos : table.get(character).key) {
                 list.add(pos);
             }
             list.add((byte) character.charValue());
@@ -85,22 +88,37 @@ public class HuffmanTable {
         return result;
     }
 
-    void fillTable(HuffmanNode node, Long key, int level){
+    void fillTable(HuffmanNode node, byte[] key, int level){
         if(node.isLeaf()){
             table.put(node.value, new HuffmanKey(key, (level > 0? level : 1)));
         }
         else {
-            if(node.left != null) fillTable(node.left, turnOffAndShift(key), level + 1);
-            if(node.right != null) fillTable(node.right, turnOnAndShift(key), level + 1);
+            byte[] newKey = key;
+            if(level > 1 && level % BYTE_SIZE == 0){
+                newKey = new byte[key.length + 1];
+                for (int i = 1; i <= key.length; i++) {
+                    newKey[newKey.length - i] = key[key.length - i];
+                }
+            }
+            if(node.left != null){
+                byte[] leftKey = Arrays.copyOf(newKey, newKey.length);
+                leftKey[0] = turnOffAndShift(leftKey[0]);
+                fillTable(node.left, leftKey, level + 1);
+            }
+            if(node.right != null){
+                byte[] rightKey = Arrays.copyOf(newKey, newKey.length);
+                rightKey[0] = turnOnAndShift(rightKey[0]);
+                fillTable(node.right, rightKey, level + 1);
+            }
         }
     }
 
-    Long turnOnAndShift(long num){
-        return (num << 1L | 1L);
+    byte turnOnAndShift(byte num){
+        return (byte) (num << 1 | 1);
     }
 
-    Long turnOffAndShift(long num){
-        return num << 1L & ~(1L);
+    byte turnOffAndShift(byte num){
+        return (byte) (num << 1 & ~(1));
     }
 
     HuffmanNode createTree(List<CharacterFreqPair> pairs){
@@ -158,10 +176,10 @@ public class HuffmanTable {
     }
 
     public static class HuffmanKey{
-        long key;
+        byte[] key;
         int size;
 
-        public HuffmanKey(long key, int size) {
+        public HuffmanKey(byte[] key, int size) {
             this.key = key;
             this.size = size;
         }
@@ -173,13 +191,13 @@ public class HuffmanTable {
 
             HuffmanKey that = (HuffmanKey) o;
 
-            if (key != that.key) return false;
-            return size == that.size;
+            if (size != that.size) return false;
+            return Arrays.equals(key, that.key);
         }
 
         @Override
         public int hashCode() {
-            int result = (int) (key ^ (key >>> 32));
+            int result = Arrays.hashCode(key);
             result = 31 * result + size;
             return result;
         }
