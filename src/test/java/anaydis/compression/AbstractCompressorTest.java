@@ -2,15 +2,14 @@ package anaydis.compression;
 
 import anaydis.sort.data.DataSetGenerator;
 import anaydis.sort.data.StringDataSetGenerator;
-import jdk.internal.util.xml.impl.Input;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,16 +25,22 @@ public abstract class AbstractCompressorTest {
         this.compressor = compressor;
         generator = new StringDataSetGenerator();
     }
-    
+
     @Test
-    public void encodeDecodeTest() throws Exception{
+    public void encodeDecodeParticularTest() throws Exception{
+        List<String> strings = Collections.singletonList("ASHLEY");
+        encondeDecodeListsTest(strings);
+    }
+
+    @Test
+    public void encodeDecodeTestRandom() throws Exception{
         List<String> strings = generator.createRandom(10);
         encondeDecodeListsTest(strings);
     }
 
     @Test
     public void encodeDecodeDuplicatesTest() throws Exception{
-        List<String> strings = Arrays.asList("NNNNNN", "ADADADDADA", "485483132.02164", "NNDSDDDDDDD");
+        List<String> strings = Arrays.asList("NNNNNN", "ADADADDADA", "NNDSDDDDDDD");
         encondeDecodeListsTest(strings);
     }
 

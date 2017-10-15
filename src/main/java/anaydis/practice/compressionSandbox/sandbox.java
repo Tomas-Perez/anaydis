@@ -13,6 +13,9 @@ import java.util.PriorityQueue;
  */
 public class sandbox {
     public static void main(String[] args) throws Exception{
+        byte[] array = {(byte) 127};
+        System.out.println(array[0]);
+        System.out.println((int) array[0]);
 //        String test = "This is a test ñ";
 //        InputStream stream = new ByteArrayInputStream(test.getBytes(StandardCharsets.UTF_8.name()));
 //        int Byte = stream.read();
@@ -25,11 +28,11 @@ public class sandbox {
 //        System.out.println(binary);
 //        System.out.println(binary2);
 //        System.out.println((char) 250);
-        DataSetGenerator<Integer> generator = new IntegerDataSetGenerator();
-        PriorityQueue<Integer> queue = new PriorityQueue<>(generator.createRandom(10));
-        while(!queue.isEmpty()){
-            System.out.println(queue.poll());
-        }
+//        DataSetGenerator<Integer> generator = new IntegerDataSetGenerator();
+//        PriorityQueue<Integer> queue = new PriorityQueue<>(generator.createRandom(10));
+//        while(!queue.isEmpty()){
+//            System.out.println(queue.poll());
+//        }
 //        for(int i = 0; i < 1024; i++){
 //            System.out.println((char) i);
 //        }

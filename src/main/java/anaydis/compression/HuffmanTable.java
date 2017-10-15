@@ -3,49 +3,71 @@ package anaydis.compression;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 /**
  * @author Tomas Perez Molina
  */
 public class HuffmanTable {
-    private HashMap<Integer, Character> table;
+    private HashMap<Character, HuffmanKey> table;
+    private List<CharacterFreqPair> characterFreqPairs;
 
     public HuffmanTable(List<CharacterFreqPair> pairs){
+        characterFreqPairs = pairs;
         table = new HashMap<>(pairs.size());
         HuffmanNode head = createTree(pairs);
-        fillTable(head, 0, 0);
+        fillTable(head, (byte) 0, 0);
     }
 
-    public Character get(int key){
-        return table.get(key);
+    public MsgLengthAndSigBits getMessageSizeInBytes(){
+        int msgSize = characterFreqPairs.stream()
+                .mapToInt(
+                    pair -> {
+                        int keySize = table.get(pair.value).size;
+                        return pair.freq * (keySize > 0 ? keySize : 1);
+                    })
+                .sum();
+        return new MsgLengthAndSigBits((msgSize + 7) / 8, msgSize % 8); // round up and get bytes
     }
 
-    public List<Pair<Integer, Character>> getKeyValuePairs(){
-        List<Pair<Integer, Character>> pairs = new ArrayList<>(table.size());
+    public HuffmanKey getKey(Character character){
+        return table.get(character);
+    }
+
+    public List<Pair<Character, HuffmanKey>> getKeyValuePairs(){
+        List<Pair<Character, HuffmanKey>> pairs = new ArrayList<>(table.size());
         table.forEach((key, value) -> pairs.add(new Pair<>(key, value)));
         return pairs;
     }
 
-    void fillTable(HuffmanNode node, int key, int level){
+    public byte[] toByteArray() {
+        byte[] array = new byte[table.size() * 3];
+        int i = 0;
+        for (Character character : table.keySet()) {
+            array[i] = table.get(character).key;
+            array[i+1] = table.get(character).size;
+            array[i+2] = (byte) character.charValue();
+            i += 3;
+        }
+        return array;
+    }
+
+    void fillTable(HuffmanNode node, Byte key, int level){
         if(node.isLeaf()){
-            table.put(key, node.value);
+            table.put(node.value, new HuffmanKey(key, (byte) (level > 0? level : 1)));
         }
         else {
-            if(node.left != null) fillTable(node.left, turnOffBitAt(key, level), level + 1);
-            if(node.right != null) fillTable(node.right, turnOnBitAt(key, level), level + 1);
+            if(node.left != null) fillTable(node.left, turnOffAndShift(key), level + 1);
+            if(node.right != null) fillTable(node.right, turnOnAndShift(key), level + 1);
         }
     }
 
-    int turnOnBitAt(int num, int at){
-        return num | (1 << at);
+    Byte turnOnAndShift(byte num){
+        return (byte) ((num << 1| 1) );
     }
 
-    int turnOffBitAt(int num, int at){
-        return num & ~(1 << at);
+    Byte turnOffAndShift(byte num){
+        return (byte) (num << 1 & ~(1));
     }
 
     HuffmanNode createTree(List<CharacterFreqPair> pairs){
@@ -99,6 +121,44 @@ public class HuffmanTable {
         public CharacterFreqPair(int freq, char value) {
             this.freq = freq;
             this.value = value;
+        }
+    }
+
+    public static class HuffmanKey{
+        byte key;
+        byte size;
+
+        public HuffmanKey(byte key, byte size) {
+            this.key = key;
+            this.size = size;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof HuffmanKey)) return false;
+
+            HuffmanKey that = (HuffmanKey) o;
+
+            if (key != that.key) return false;
+            return size == that.size;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = (int) key;
+            result = 31 * result + (int) size;
+            return result;
+        }
+    }
+
+    public static class MsgLengthAndSigBits{
+        int msgLength;
+        int sigBits;
+
+        public MsgLengthAndSigBits(int msgLength, int sigBits) {
+            this.msgLength = msgLength;
+            this.sigBits = sigBits;
         }
     }
 }
