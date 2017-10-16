@@ -90,9 +90,6 @@ public class HuffmanTable {
     }
 
     void fillTable(HuffmanNode node, byte[] key, int level){
-        if(!node.isLeaf() && (node.left.value == ';' || node.right.value == ';')){
-            System.out.println(";");
-        }
         if(node.isLeaf()){
             table.put(node.value, new HuffmanKey(key, (level > 0? level : 1)));
         }

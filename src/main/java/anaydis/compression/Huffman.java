@@ -28,7 +28,6 @@ public class Huffman implements Compressor {
         int lastSigBits = msgLengthAndSigBits.sigBits;
         input.reset();
         final byte[] tableArray = table.toByteArray();
-        System.out.println(Arrays.toString(tableArray));
         output.write(tableArray);
         output.write(CONTROL_VAL);
         output.write(CONTROL_VAL);
@@ -48,15 +47,12 @@ public class Huffman implements Compressor {
             byte[] keyArray = huffmanKey.key;
             for (int i = 0; i < keyArray.length; i++) {
                 int initialIndex = BYTE_SIZE - 1;
-                if(i == keyArray.length - 1) initialIndex = (huffmanKey.size % BYTE_SIZE) - 1;
+                if(i == keyArray.length - 1 && huffmanKey.size % BYTE_SIZE != 0) initialIndex = (huffmanKey.size % BYTE_SIZE) - 1;
                 for (int j = initialIndex; j >= 0; j--) {
-                    System.out.println(j);
                     if (bitAt(keyArray[i], j)) acum = turnOnAndShift(acum);
                     else acum = turnOffAndShift(acum);
-                    System.out.println(Integer.toBinaryString(acum));
                     sigBits++;
                     if (sigBits == BYTE_SIZE) {
-                        System.out.println(acum);
                         output.write(acum);
                         acum = 0;
                         sigBits = 0;
@@ -124,7 +120,6 @@ public class Huffman implements Compressor {
                     acum[acum.length - 1] = turnOffAndShift(acum[acum.length - 1]);
                 }
                 readSize++;
-                System.out.println(Integer.toBinaryString(acum[0]));
                 final Character character = keyMap.get(new HuffmanTable.HuffmanKey(acum, readSize));
                 if(character != null){
                     output.write(character);

@@ -33,7 +33,6 @@ public abstract class AbstractCompressorTest {
         encondeDecodeListsTest(strings);
     }
 
-    @Ignore
     @Test
     public void largeTextTest() throws Exception{
         List<String> strings = Collections.singletonList("\"Call me Ishmael.  Some years ago--never mind how long\n" +
@@ -94,6 +93,7 @@ public abstract class AbstractCompressorTest {
         encondeDecodeListsTest(strings);
     }
 
+
     @Test
     public void encodeDecodeDuplicatesTest() throws Exception{
         List<String> strings = Arrays.asList("NNNNNN", "ADADADDADA", "NNDSDDDDDDD");
@@ -106,7 +106,6 @@ public abstract class AbstractCompressorTest {
             ByteArrayOutputStream compressedOutput = new ByteArrayOutputStream();
             compressor.encode(stringInput, compressedOutput);
             byte[] compressedBytes = compressedOutput.toByteArray();
-            System.out.println(Arrays.toString(compressedBytes));
             InputStream compressedInput = new ByteArrayInputStream(compressedBytes);
             ByteArrayOutputStream stringOutput = new ByteArrayOutputStream();
             compressor.decode(compressedInput, stringOutput);
