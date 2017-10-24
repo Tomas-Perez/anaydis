@@ -106,6 +106,7 @@ public abstract class AbstractCompressorTest {
             ByteArrayOutputStream compressedOutput = new ByteArrayOutputStream();
             compressor.encode(stringInput, compressedOutput);
             byte[] compressedBytes = compressedOutput.toByteArray();
+
             InputStream compressedInput = new ByteArrayInputStream(compressedBytes);
             ByteArrayOutputStream stringOutput = new ByteArrayOutputStream();
             compressor.decode(compressedInput, stringOutput);

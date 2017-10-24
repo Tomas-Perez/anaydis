@@ -1,29 +1,24 @@
 package anaydis.compression;
 
-import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
-
 import java.nio.ByteBuffer;
 import java.util.*;
 
 /**
  * @author Tomas Perez Molina
  */
-public class HuffmanTable {
-    private final int BYTE_SIZE = 8;
-    private final byte CONTROL_VAL = (byte) 255;
+class HuffmanTable {
     private HashMap<Character, HuffmanKey> table;
     private List<CharacterFreqPair> characterFreqPairs;
-    private HuffmanNode head;
 
-    public HuffmanTable(List<CharacterFreqPair> pairs){
+    HuffmanTable(List<CharacterFreqPair> pairs){
         characterFreqPairs = pairs;
         table = new HashMap<>(pairs.size());
-        head = createTree(pairs);
+        HuffmanNode head = createTree(pairs);
         fillTable(head, new byte[]{0}, 0);
     }
 
-    public MsgLengthAndSigBits getMessageSizeInBytes(){
+    MsgLengthAndSigBits getMessageSizeInBytes(){
         int msgSize = characterFreqPairs.stream()
                 .mapToInt(
                     pair -> {
@@ -34,22 +29,17 @@ public class HuffmanTable {
         return new MsgLengthAndSigBits((msgSize + 7) / 8, msgSize % 8); // round up and get bytes
     }
 
-    public HuffmanKey getKey(Character character){
+    HuffmanKey getKey(Character character){
         return table.get(character);
     }
 
-    public List<Pair<Character, HuffmanKey>> getKeyValuePairs(){
-        List<Pair<Character, HuffmanKey>> pairs = new ArrayList<>(table.size());
-        table.forEach((key, value) -> pairs.add(new Pair<>(key, value)));
-        return pairs;
-    }
-
-    public byte[] toByteArray() {
+    byte[] toByteArray() {
         ArrayList<Byte> list = new ArrayList<>(table.size() * 3);
         for (Character character : table.keySet()) {
             for (byte pos : longToByteArray((long) table.get(character).size)) {
                 list.add(pos);
             }
+            final byte CONTROL_VAL = (byte) 255;
             list.add(CONTROL_VAL);
             for (byte pos : table.get(character).key) {
                 list.add(pos);
@@ -63,7 +53,7 @@ public class HuffmanTable {
         return result;
     }
 
-    byte[] longToByteArray(Long aLong){
+    private byte[] longToByteArray(Long aLong){
         byte[] array = new byte[8];
         ByteBuffer.wrap(array).putLong(aLong);
         int actualLength = 0;
@@ -89,17 +79,16 @@ public class HuffmanTable {
         return result;
     }
 
-    void fillTable(HuffmanNode node, byte[] key, int level){
+    private void fillTable(HuffmanNode node, byte[] key, int level){
         if(node.isLeaf()){
             table.put(node.value, new HuffmanKey(key, (level > 0? level : 1)));
         }
         else {
             byte[] newKey = key;
+            final int BYTE_SIZE = 8;
             if(level > 1 && level % BYTE_SIZE == 0){
                 newKey = new byte[key.length + 1];
-                for (int i = 0; i < key.length; i++) {
-                    newKey[i] = key[i];
-                }
+                System.arraycopy(key, 0, newKey, 0, key.length);
             }
             if(node.left != null){
                 byte[] leftKey = Arrays.copyOf(newKey, newKey.length);
@@ -114,15 +103,15 @@ public class HuffmanTable {
         }
     }
 
-    byte turnOnAndShift(byte num){
+    private byte turnOnAndShift(byte num){
         return (byte) (num << 1 | 1);
     }
 
-    byte turnOffAndShift(byte num){
+    private byte turnOffAndShift(byte num){
         return (byte) (num << 1 & ~(1));
     }
 
-    HuffmanNode createTree(List<CharacterFreqPair> pairs){
+    private HuffmanNode createTree(List<CharacterFreqPair> pairs){
         PriorityQueue<HuffmanNode> priorityQueue = new PriorityQueue<>(pairs.size());
         pairs.stream()
                 .map(pair -> new HuffmanNode(pair.freq, pair.value))
@@ -166,11 +155,11 @@ public class HuffmanTable {
         }
     }
 
-    public static class CharacterFreqPair{
+    static class CharacterFreqPair{
         int freq;
         char value;
 
-        public CharacterFreqPair(int freq, char value) {
+        CharacterFreqPair(int freq, char value) {
             this.freq = freq;
             this.value = value;
         }
@@ -180,7 +169,7 @@ public class HuffmanTable {
         byte[] key;
         int size;
 
-        public HuffmanKey(byte[] key, int size) {
+        HuffmanKey(byte[] key, int size) {
             this.key = key;
             this.size = size;
         }
@@ -192,8 +181,7 @@ public class HuffmanTable {
 
             HuffmanKey that = (HuffmanKey) o;
 
-            if (size != that.size) return false;
-            return Arrays.equals(key, that.key);
+            return size == that.size && Arrays.equals(key, that.key);
         }
 
         @Override
@@ -204,11 +192,11 @@ public class HuffmanTable {
         }
     }
 
-    public static class MsgLengthAndSigBits{
+    static class MsgLengthAndSigBits{
         int msgLength;
         int sigBits;
 
-        public MsgLengthAndSigBits(int msgLength, int sigBits) {
+        MsgLengthAndSigBits(int msgLength, int sigBits) {
             this.msgLength = msgLength;
             this.sigBits = sigBits;
         }

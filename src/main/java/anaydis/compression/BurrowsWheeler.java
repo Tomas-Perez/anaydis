@@ -1,12 +1,13 @@
 package anaydis.compression;
 
+import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.ByteBuffer;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -14,6 +15,8 @@ import java.util.stream.IntStream;
  * @author Tomas Perez Molina
  */
 public class BurrowsWheeler implements Compressor{
+    private final int CONTROL_VAL = 255;
+
     @Override
     public void encode(@NotNull InputStream input, @NotNull OutputStream output) throws IOException {
         int read_byte = input.read();
@@ -23,7 +26,7 @@ public class BurrowsWheeler implements Compressor{
             read_byte = input.read();
         }
         List<Rotation> rotations = IntStream
-                                            .range(0, msgBytes.size() + 1)
+                                            .range(0, msgBytes.size())
                                             .boxed()
                                             .map(x -> new Rotation(msgBytes, x))
                                             .collect(Collectors.toList());
@@ -32,9 +35,10 @@ public class BurrowsWheeler implements Compressor{
         for (Integer character : l) {
             output.write(character);
         }
+        output.write(CONTROL_VAL);
         for (int i = 0; i < rotations.size(); i++) {
             Rotation current = rotations.get(i);
-            if(current.number == 1) output.write(i);
+            if(current.number == 1) writeInt(i, output);
         }
         input.close();
         output.close();
@@ -42,16 +46,28 @@ public class BurrowsWheeler implements Compressor{
 
     @Override
     public void decode(@NotNull InputStream input, @NotNull OutputStream output) throws IOException {
-        List<Integer> l = new ArrayList<>();
+        List<Pair<Integer, Integer>> lAndSubIndexes = new ArrayList<>();
+        HashMap<Integer, Integer> charSubIndexMap = new HashMap<>();
         int read_byte = input.read();
-        while(read_byte != -1){
-            l.add(read_byte);
+        while(read_byte != CONTROL_VAL){
+            Integer character = read_byte;
+            charSubIndexMap.merge(character, 0, (a, b) -> a + 1);
+            Integer subIndex = charSubIndexMap.get(character);
+            lAndSubIndexes.add(new Pair<>(character, subIndex));
             read_byte = input.read();
         }
-        List<Integer> f = l.subList(0, l.size());
-        f.sort(Integer::compareTo);
-        List<Integer> t = l.stream().map(f::indexOf).collect(Collectors.toList());
-
+        int nextIndex = readInt(input);
+        List<Pair<Integer, Integer>> fAndSubIndexes = new ArrayList<>(lAndSubIndexes);
+        fAndSubIndexes.sort(Comparator.comparingInt(Pair::getKey));
+        List<Integer> t = fAndSubIndexes.stream().map(lAndSubIndexes::indexOf).collect(Collectors.toList());
+        byte[] msg = new byte[lAndSubIndexes.size()];
+        for (int i = 0; i < msg.length; i++) {
+            msg[i] = lAndSubIndexes.get(nextIndex).getKey().byteValue();
+            nextIndex = t.get(nextIndex);
+        }
+        output.write(msg);
+        input.close();
+        output.close();
     }
 
     private class Rotation implements Comparable<Rotation>{
@@ -84,5 +100,19 @@ public class BurrowsWheeler implements Compressor{
             }
             return 0;
         }
+    }
+
+    private void writeInt(int anInt, OutputStream stream) throws IOException{
+        byte[] buffer = new byte[4];
+        ByteBuffer.wrap(buffer).putInt(anInt);
+        stream.write(buffer);
+    }
+
+    private int readInt(InputStream stream) throws IOException{
+        byte[] buffer = new byte[4];
+        for (int i = 0; i < buffer.length; i++) {
+            buffer[i] = (byte) stream.read();
+        }
+        return ByteBuffer.wrap(buffer).getInt();
     }
 }

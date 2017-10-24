@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import java.util.List;
 public class Huffman implements Compressor {
     private final int CONTROL_VAL = 255;
     private final int BYTE_SIZE = 8;
-    private final int MAX_BYTE_POSITIVE = 127;
 
     @Override
     public void encode(@NotNull InputStream input, @NotNull OutputStream output) throws IOException {
@@ -31,6 +29,7 @@ public class Huffman implements Compressor {
         output.write(tableArray);
         output.write(CONTROL_VAL);
         output.write(CONTROL_VAL);
+        final int MAX_BYTE_POSITIVE = 127;
         while(msgLength > MAX_BYTE_POSITIVE){
             output.write(MAX_BYTE_POSITIVE);
             msgLength -= MAX_BYTE_POSITIVE;
@@ -61,9 +60,7 @@ public class Huffman implements Compressor {
             }
             read_byte = input.read();
         }
-        if(sigBits > 0){
-            output.write(acum << BYTE_SIZE - sigBits);
-        }
+        if(sigBits > 0) output.write(acum << BYTE_SIZE - sigBits);
         input.close();
         output.close();
     }
@@ -105,7 +102,7 @@ public class Huffman implements Compressor {
             read_byte = input.read();
         }
         int lastSigBit = input.read();
-        input.read();
+        int tmp = input.read();
         read_byte = input.read();
         byte[] acum = new byte[]{0};
         int readSize = 0;
@@ -128,9 +125,7 @@ public class Huffman implements Compressor {
                 }
                 else if(readSize > 1 && (readSize) % BYTE_SIZE == 0){
                     byte[] newAcum = new byte[acum.length + 1];
-                    for (int k = 0; k < acum.length; k++) {
-                        newAcum[k] = acum[k];
-                    }
+                    System.arraycopy(acum, 0, newAcum, 0, acum.length);
                     acum = newAcum;
                 }
             }
@@ -141,16 +136,7 @@ public class Huffman implements Compressor {
         output.close();
     }
 
-    private long extractLong(@NotNull InputStream input, int size) throws IOException {
-        byte[] keyArray = new byte[8];
-        int initialIndex = keyArray.length - 1 - ((size - 1) / 8);
-        for (int i = initialIndex; i < keyArray.length; i++) {
-            keyArray[i] = (byte) input.read();
-        }
-        return ByteBuffer.wrap(keyArray).getLong();
-    }
-
-    List<HuffmanTable.CharacterFreqPair> countCharacters(@NotNull InputStream input) throws IOException{
+    private List<HuffmanTable.CharacterFreqPair> countCharacters(@NotNull InputStream input) throws IOException{
         HashMap<Character, Integer> frequencies = new HashMap<>();
         int readByte = input.read();
         while(readByte != -1){
@@ -162,15 +148,15 @@ public class Huffman implements Compressor {
         return result;
     }
 
-    boolean bitAt(long num, int at){
+    private boolean bitAt(long num, int at){
         return (num >> at & 1) != 0;
     }
 
-    byte turnOnAndShift(byte num){
+    private byte turnOnAndShift(byte num){
         return (byte) (num << 1 | 1);
     }
 
-    byte turnOffAndShift(byte num){
+    private byte turnOffAndShift(byte num){
         return (byte) (num << 1 & ~(1));
     }
 }
