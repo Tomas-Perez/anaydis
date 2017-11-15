@@ -2,7 +2,9 @@ package anaydis.search;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -100,7 +102,7 @@ public class TSTTrieMap<V> implements Map<String, V>{
     @Override
     public Iterator<String> keys() {
         Stack<NodeFullKeyPair> initialStack = new Stack<>();
-        initialStack.push(new NodeFullKeyPair(head, ""));
+        if(head != null) initialStack.push(new NodeFullKeyPair(head, ""));
 
         return new Iterator<String>() {
             private Stack<NodeFullKeyPair> stack = initialStack;
@@ -127,6 +129,26 @@ public class TSTTrieMap<V> implements Map<String, V>{
                 return key + node.key;
             }
         };
+    }
+
+    public List<String> wildcardKeys(String pattern){
+        ArrayList<String> collector = new ArrayList<>();
+        wildcard(head, pattern, collector, "");
+        return collector;
+    }
+
+    private void wildcard(TripleNode node, String pattern, List<String> collector, String key){
+        final int level = key.length();
+        if(node == null || pattern.length() == key.length()) return;
+        boolean predicate = pattern.charAt(level) == '*';
+        if(predicate || pattern.charAt(level) < node.key)
+            wildcard(node.left, pattern, collector, key);
+        if(predicate || pattern.charAt(level) == node.key){
+            if(node.value != null && key.length() == pattern.length() - 1) collector.add(key + node.key);
+            wildcard(node.middle, pattern, collector, key + node.key);
+        }
+        if(predicate || pattern.charAt(level) > node.key)
+            wildcard(node.right, pattern, collector, key);
     }
 
     private class TripleNode{

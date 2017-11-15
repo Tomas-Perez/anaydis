@@ -125,7 +125,7 @@ public class RandomizedTreeMap<K, V> implements Map<K,V> {
         size = 0;
     }
 
-    @Nullable Node find(@Nullable Node node, @NotNull K key){
+    @Nullable private Node find(@Nullable Node node, @NotNull K key){
         if(node == null) return null;
         int comp = keyComp.compare(key, node.key);
         if(comp > 0) return find(node.right, key);
@@ -135,16 +135,34 @@ public class RandomizedTreeMap<K, V> implements Map<K,V> {
 
     @Override
     public Iterator<K> keys() {
-        List<K> keys = new ArrayList<>(size);
-        inOrder(head, keys);
-        return keys.iterator();
-    }
+        Stack<Node> initialStack = new Stack<>();
+        if(head != null) initialStack.push(head);
 
-    private void inOrder(Node node, List<K> target) {
-        if(node == null) return;
-        inOrder(node.left, target);
-        target.add(node.key);
-        inOrder(node.right, target);
+        return new Iterator<K>() {
+            private Stack<Node> stack = initialStack;
+            private Stack<Node> visited = new Stack<>();
+
+            @Override
+            public boolean hasNext() {
+                return !stack.isEmpty();
+            }
+
+            @Override
+            public K next() {
+                while(true) {
+                    Node current = stack.pop();
+                    if (visited.isEmpty() || visited.peek() != current) {
+                        if (current.right != null) stack.push(current.right);
+                        stack.push(current);
+                        visited.push(current);
+                        if (current.left != null) stack.push(current.left);
+                    } else {
+                        visited.pop();
+                        return current.key;
+                    }
+                }
+            }
+        };
     }
 
     protected class Node {
