@@ -33,7 +33,7 @@ public class TSTTrieMap<V> implements Map<String, V>{
     public V put(@NotNull String key, V value) {
         final NodeValuePair put = put(head, key, value, 0);
         head = put.node;
-        return head.value;
+        return put.value;
     }
 
     private NodeValuePair put(TripleNode node, @NotNull String key, V value, int level){
